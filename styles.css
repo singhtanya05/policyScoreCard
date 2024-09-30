@@ -4,12 +4,12 @@ body {
   color: #333;
   padding: 20px;
   margin: 0;
-  min-width: 350px;
+  min-width: 100px; /* Increased minimum width */
   border-radius: 8px; /* Rounded corners */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  min-width: 300px; /* Set a default minimum width */
   scrollbar-width: thin; /* Use a thin scrollbar */
   scrollbar-color: #4CAF50 #f1f1f1; /* Thumb color and track color */
+  overflow: auto; /* Ensure scrolling works if content overflows */
 }
 
 /* Media queries for responsiveness */
@@ -21,13 +21,13 @@ body {
 
 @media (min-width: 401px) and (max-width: 600px) {
   body {
-    min-width: 350px; /* Minimum width for medium screens */
+    min-width: 400px; /* Minimum width for medium screens */
   }
 }
 
 @media (min-width: 601px) {
   body {
-    min-width: 400px; /* Minimum width for larger screens */
+    min-width: 450px; /* Increased minimum width for larger screens */
   }
 }
 
@@ -89,6 +89,7 @@ button:focus {
 #rate-button, #history-button {
   height: 50px; /* Set a consistent height */
 }
+
 /* Custom Scrollbar for Webkit Browsers (Chrome, Safari) */
 body::-webkit-scrollbar {
   width: 12px; /* Width of the scrollbar */
@@ -102,10 +103,13 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
   background: #4CAF50; /* Color of the scrollbar thumb */
   border-radius: 10px; /* Rounded corners for the thumb */
+  transition: background 0.3s; /* Smooth transition for color change */
 }
 
 body::-webkit-scrollbar-thumb:hover {
   background: #45a049; /* Darker color on hover */
 }
 
-
+body::-webkit-scrollbar-thumb:active {
+  background: #388e3c; /* Even darker color when active */
+}
