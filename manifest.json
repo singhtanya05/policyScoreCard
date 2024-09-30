@@ -1,21 +1,26 @@
 {
-    "manifest_version": 3,
-    "name": "Privacy Policy Evaluator",
-    "version": "1.0",
-    "description": "Evaluates and scores the privacy policies of websites.",
-    "permissions": ["activeTab", "storage", "scripting"],
-    "action": {
+  "manifest_version": 3,
+  "name": "Privacy Policy Evaluator",
+  "version": "1.0",
+  "description": "Evaluates and scores the privacy policies of websites.",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "action": {
       "default_popup": "popup.html",
       "default_icon": "icons/icon.png"
-    },
-    "background": {
+  },
+  "background": {
       "service_worker": "background.js"
-    },
-    "content_scripts": [
+  },
+  "content_scripts": [
       {
-        "matches": ["<all_urls>"],
-        "js": ["content.js"]
+          "matches": ["<all_urls>"],
+          "js": ["content.js"]
       }
-    ]
-  }
-  
+  ],
+  "web_accessible_resources": [
+      {
+          "resources": ["libs/compromise.js"],
+          "matches": ["<all_urls>"]
+      }
+  ]
+}

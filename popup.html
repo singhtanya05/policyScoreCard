@@ -5,12 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy Evaluator</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="https://unpkg.com/compromise"></script>
+  <!-- <script src="https://unpkg.com/compromise"></script> -->
+  <script src="libs/compromise.min.js"></script>
 </head>
 <body>
-  <h1>Privacy Score</h1>
-  <div id="score">Analyzing...</div>
-  <div id="details"></div>
+  <h1>Privacy Score: <span id="score">Analyzing...</span></h1>
+<div id="details">Analyzing privacy policy...</div>
+<ul id="breakdown">
+  <li>Data Collection: <span id="dataCollection">...</span></li>
+  <li>Third-Party Sharing: <span id="thirdPartySharing">...</span></li>
+  <li>User Rights: <span id="userRights">...</span></li>
+  <li>Data Retention: <span id="dataRetention">...</span></li>
+  <li>Security: <span id="security">...</span></li>
+</ul>
+
   <button id="rate-button">Rate Privacy Practices</button>
 
   <script src="popup.js"></script>
