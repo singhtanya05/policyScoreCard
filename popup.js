@@ -5,6 +5,20 @@ function updateScore() {
 
         chrome.storage.local.get({ history: {} }, (result) => {
             const history = result.history;
+            // const score = siteData.privacyScore || 0; // Get the score
+
+            // // Update the score with color based on the value
+            // const scoreElement = document.getElementById("score");
+            // scoreElement.textContent = score;
+
+            // // Set the color based on the score
+            // if (score > 70) {
+            //     scoreElement.style.color = "#2ecc71"; // Green for scores above 70
+            // } else if (score > 45) {
+            //     scoreElement.style.color = "#f1c40f"; // Yellow for scores above 45
+            // } else {
+            //     scoreElement.style.color = "#e74c3c"; // Red for remaining scores
+            // }
 
             if (history[currentUrl]) {
                 const siteData = history[currentUrl];
