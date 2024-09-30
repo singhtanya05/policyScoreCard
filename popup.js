@@ -1,45 +1,78 @@
-// Fetch and display the privacy score and details from storage
-// Fetch and display the privacy score and details from storage
+// Get the current tab's URL
+// Get the current tab's URL
 function updateScore() {
-    chrome.storage.local.get(['privacyScore', 'privacyDetails'], (result) => {
-        if (result.privacyScore !== undefined) {
-            document.getElementById("score").textContent = result.privacyScore;
-            document.getElementById("details").textContent = result.privacyDetails;
+    // Get the current tab's URL
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+        // const currentUrl = new URL(tabs[0].url).origin;  // Get the base URL (origin) for comparison
+        const currentUrl = message.url;
 
-            // Update individual breakdowns
-            document.getElementById("dataCollection").textContent = result.dataCollection || "Not mentioned";
-            document.getElementById("thirdPartySharing").textContent = result.thirdPartySharing || "Not mentioned";
-            document.getElementById("userRights").textContent = result.userRights || "Not mentioned";
-            document.getElementById("dataRetention").textContent = result.dataRetention || "Not mentioned";
-            document.getElementById("security").textContent = result.security || "Not mentioned";
-        }
+
+        // Retrieve the score and breakdown specific to this URL
+        chrome.storage.local.get({ history: {} }, (result) => {
+            const history = result.history;
+            console.log('Fetching score for URL:', currentUrl);
+            // if (history[currentUrl]) {
+            if (history[privacyPolicyUrl]) {
+                console.log('Found data in history:', siteData);
+                const siteData = history[currentUrl];
+
+                document.getElementById("score").textContent = siteData.privacyScore || "No score available yet";
+                document.getElementById("details").textContent = siteData.privacyDetails || "The privacy policy hasn't been analyzed yet.";
+
+                // Update individual breakdowns
+                document.getElementById("dataCollection").textContent = siteData.dataCollection || "Not mentioned";
+                document.getElementById("thirdPartySharing").textContent = siteData.thirdPartySharing || "Not mentioned";
+                document.getElementById("userRights").textContent = siteData.userRights || "Not mentioned";
+                document.getElementById("dataRetention").textContent = siteData.dataRetention || "Not mentioned";
+                document.getElementById("security").textContent = siteData.security || "Not mentioned";
+            } else {
+                console.log('No data found for this URL in history');
+                // If the URL is not in history, show analyzing state
+                document.getElementById("score").textContent = "No score available yet.";
+                document.getElementById("details").textContent = "The privacy policy hasn't been analyzed yet.";
+                document.getElementById("dataCollection").textContent = "Analyzing...";
+                document.getElementById("thirdPartySharing").textContent = "Analyzing...";
+                document.getElementById("userRights").textContent = "Analyzing...";
+                document.getElementById("dataRetention").textContent = "Analyzing...";
+                document.getElementById("security").textContent = "Analyzing...";
+            }
+        });
     });
-
 }
-
-// Update score immediately if available
 updateScore();
+
+
 
 // Listen for background script notification when analysis is complete
 chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "analysisComplete") {
-        // When background sends notification, update the score
-        updateScore();
+        const currentUrl = new URL(message.url).origin;  // Extract the URL that was analyzed
+
+        // Ensure the popup is updating only if the current page matches the analyzed URL
+        chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+            const tabUrl = new URL(tabs[0].url).origin;
+
+            if (tabUrl === currentUrl) {
+                // Refresh the score and breakdown for the analyzed URL
+                updateScore();
+            }
+        });
     }
 });
 
 
 
-document.getElementById("rate-button").addEventListener("click", () => {
-    const userRating = prompt("Please rate the privacy practices on this site (1-5):");
 
-    if (userRating >= 1 && userRating <= 5) {
-        console.log("User rating submitted:", userRating); // Log the user rating
+document.getElementById("history-button").addEventListener("click", () => {
+    chrome.storage.local.get('history', (result) => {
+        const history = result.history || {};
+        let historyList = '';
 
-        // Store the user's rating in chrome.storage (you can enhance this further)
-        chrome.storage.local.set({ userRating: userRating });
-        alert(`Thank you for rating! Your rating: ${userRating}`);
-    } else {
-        alert("Invalid rating. Please enter a number between 1 and 5.");
-    }
+        // Display history
+        for (const [url, data] of Object.entries(history)) {
+            historyList += `Website: ${url} - Score: ${data.privacyScore}\n`;
+        }
+
+        alert(historyList || 'No history available.');
+    });
 });
