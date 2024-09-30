@@ -3,18 +3,19 @@ importScripts('libs/compromise.min.js');
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "privacyPolicyLink") {
-        const privacyPolicyUrl = message.data;
+        const privacyPolicyUrl = new URL(message.data).origin;  // Use the base URL (origin)
 
-        fetch(privacyPolicyUrl)
+        // Fetch the privacy policy content
+        fetch(message.data)
             .then(response => response.text())
             .then(text => {
                 const analysisResult = analyzePrivacyPolicyWithNLP(text);
 
-                // Store privacy score and breakdown specific to this URL
+                // Store privacy score and breakdown specific to this base URL
                 chrome.storage.local.get({ history: {} }, (result) => {
                     const history = result.history;
 
-                    // Store the analysis result for this specific URL
+                    // Store the analysis result for this specific base URL
                     history[privacyPolicyUrl] = {
                         privacyScore: analysisResult.score,
                         privacyDetails: analysisResult.details,
@@ -26,9 +27,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     };
 
                     // Save the updated history object
-                    console.log('Storing data for URL:', privacyPolicyUrl, history[privacyPolicyUrl]);
+                    console.log('Storing data for base URL:', privacyPolicyUrl, history[privacyPolicyUrl]);
                     chrome.storage.local.set({ history: history }, () => {
                         console.log('Data stored successfully');
+                        // Notify the popup that the analysis is complete for this base URL
                         chrome.runtime.sendMessage({ action: "analysisComplete", url: privacyPolicyUrl });
                     });
                 });
@@ -38,10 +40,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
     }
 });
-
-
-
-
 
 function analyzePrivacyPolicyWithNLP(policyText) {
     const doc = nlp(policyText);
